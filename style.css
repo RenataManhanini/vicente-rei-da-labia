@@ -278,19 +278,23 @@ html, body {
 /* --------------------------------------------------------------------------
    5. OVERLAYS E TELAS DE INTERFACE (START, END, PAUSE)
    -------------------------------------------------------------------------- */
+#start-screen,
+#end-screen,
 .overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   background: rgba(10, 10, 25, 0.88);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 20;
+  z-index: 50;
+  pointer-events: auto !important;
   padding: clamp(12px, 3vw, 24px);
   padding-top: calc(clamp(12px, 3vw, 24px) + env(safe-area-inset-top, 0px));
   padding-bottom: calc(clamp(12px, 3vw, 24px) + env(safe-area-inset-bottom, 0px));
@@ -299,6 +303,8 @@ html, body {
 
 /* Cartão Central das Telas */
 .screen-card {
+  pointer-events: auto !important;
+  z-index: 51;
   background: var(--bg-card-gradient);
   border: 3px solid var(--color-card-border);
   border-radius: clamp(16px, 4vw, 24px);
@@ -343,30 +349,38 @@ html, body {
 }
 
 /* Foto do Rosto do Vicente (Estilo Recorte de Papel / South Park) */
+.vicente-face,
 .vicente-avatar-wrapper {
   position: relative;
-  width: clamp(120px, 25vw, 150px);
-  height: clamp(120px, 25vw, 150px);
-  margin: 4px 0;
+  width: clamp(110px, 24vw, 140px);
+  height: clamp(110px, 24vw, 140px);
+  margin: 6px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .vicente-avatar,
+#vicente-portrait,
+#end-vicente,
 #start-vicente-img,
 #end-vicente-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 8px;
   border-radius: 50%;
   border: 4px solid var(--secondary);
   box-shadow: 0 0 20px var(--secondary-glow), var(--shadow-paper);
-  background: #111;
+  background: radial-gradient(circle, #ffe082 20%, #ffb300 70%, #ff8f00 100%);
   transition: transform var(--transition-normal);
 }
 
+.vicente-face::after,
 .vicente-avatar-wrapper::after {
   content: '💋';
   position: absolute;
-  bottom: -4px;
+  bottom: -2px;
   right: 0px;
   font-size: 28px;
   filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.6));
@@ -412,6 +426,8 @@ html, body {
 
 /* Botões Primários Grandes (JOGAR / JOGAR NOVAMENTE) */
 .btn-primary,
+#start-btn,
+#restart-btn,
 #btn-play,
 #btn-restart {
   width: 100%;
@@ -427,6 +443,7 @@ html, body {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   cursor: pointer;
+  pointer-events: auto !important;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -438,6 +455,8 @@ html, body {
 }
 
 .btn-primary:hover,
+#start-btn:hover,
+#restart-btn:hover,
 #btn-play:hover,
 #btn-restart:hover {
   filter: brightness(1.1);
@@ -446,6 +465,8 @@ html, body {
 }
 
 .btn-primary:active,
+#start-btn:active,
+#restart-btn:active,
 #btn-play:active,
 #btn-restart:active {
   transform: scale(0.96);
@@ -639,7 +660,7 @@ html, body {
   bottom: 0;
   left: 0;
   width: 100%;
-  z-index: 15;
+  z-index: 40;
   pointer-events: none; /* Apenas botões recebem toques */
   display: flex;
   justify-content: space-between;
@@ -655,7 +676,7 @@ html, body {
 /* D-PAD (Cruz Direcional) */
 .dpad-container,
 #dpad {
-  pointer-events: auto;
+  pointer-events: auto !important;
   display: grid;
   grid-template-columns: repeat(3, clamp(52px, 14vw, 62px));
   grid-template-rows: repeat(3, clamp(52px, 14vw, 62px));
@@ -664,6 +685,7 @@ html, body {
 }
 
 .dpad-btn {
+  pointer-events: auto !important;
   background: rgba(22, 33, 62, 0.82);
   border: 2px solid rgba(255, 255, 255, 0.28);
   border-radius: 14px;
@@ -682,6 +704,7 @@ html, body {
 
 /* Posicionamento em Cruz no Grid 3x3 */
 .dpad-up,
+#btn-up,
 #dpad-up {
   grid-column: 2;
   grid-row: 1;
@@ -690,6 +713,7 @@ html, body {
 }
 
 .dpad-left,
+#btn-left,
 #dpad-left {
   grid-column: 1;
   grid-row: 2;
@@ -698,6 +722,7 @@ html, body {
 }
 
 .dpad-right,
+#btn-right,
 #dpad-right {
   grid-column: 3;
   grid-row: 2;
@@ -706,6 +731,7 @@ html, body {
 }
 
 .dpad-down,
+#btn-down,
 #dpad-down {
   grid-column: 2;
   grid-row: 3;
@@ -724,7 +750,7 @@ html, body {
 
 /* Botão de Ação: CANTADA 💋 */
 .cantada-container {
-  pointer-events: auto;
+  pointer-events: auto !important;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -734,6 +760,7 @@ html, body {
 
 .btn-cantada,
 #btn-cantada {
+  pointer-events: auto !important;
   width: clamp(74px, 20vw, 88px);
   height: clamp(74px, 20vw, 88px);
   border-radius: 50%;
@@ -1017,10 +1044,10 @@ html, body {
    11. DESIGN RESPONSIVO & COMPATIBILIDADE MOBILE
    -------------------------------------------------------------------------- */
 
-/* Dispositivos Desktop e Telas Grandes (> 768px): Esconde controles virtuais */
+/* Dispositivos Desktop e Telas Grandes (> 768px): Oculta controles de toque exceto se for dispositivo touch */
 @media (min-width: 769px) {
-  #mobile-controls {
-    display: none !important;
+  body:not(.touch-device) #mobile-controls:not(.force-show) {
+    display: none;
   }
 }
 
@@ -1105,6 +1132,8 @@ html, body {
    -------------------------------------------------------------------------- */
 .hidden {
   display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 button:focus-visible {

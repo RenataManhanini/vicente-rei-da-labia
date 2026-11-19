@@ -52,11 +52,11 @@
     </div>
     
     <!-- Start Screen -->
-    <div id="start-screen">
+    <div id="start-screen" class="overlay">
       <div class="screen-card">
         <h1 class="game-title">VICENTE<br><span class="subtitle">O Rei da Lábia</span></h1>
-        <div class="vicente-face">
-          <img id="vicente-portrait" src="assets/img/vicente_normal.png" alt="Vicente">
+        <div class="vicente-avatar-wrapper vicente-face">
+          <img id="vicente-portrait" class="vicente-avatar" src="assets/img/vicente_normal.png" alt="Vicente">
         </div>
         <div id="record-display">
           <span>🏅 Recorde: </span><span id="record-value">0</span><span> pts</span>
@@ -72,11 +72,11 @@
     </div>
     
     <!-- End Screen -->
-    <div id="end-screen" class="hidden">
+    <div id="end-screen" class="overlay hidden">
       <div class="screen-card">
         <h2 id="end-title"></h2>
-        <div class="vicente-face">
-          <img id="end-vicente" src="assets/img/vicente_normal.png" alt="Vicente">
+        <div class="vicente-avatar-wrapper vicente-face">
+          <img id="end-vicente" class="vicente-avatar" src="assets/img/vicente_normal.png" alt="Vicente">
         </div>
         <div id="end-message"></div>
         <div class="end-score">
@@ -99,12 +99,12 @@
     <!-- Mobile Controls -->
     <div id="mobile-controls" class="hidden">
       <div id="dpad">
-        <button type="button" class="dpad-btn" id="btn-up" data-dir="up" aria-label="Mover para cima">▲</button>
-        <button type="button" class="dpad-btn" id="btn-left" data-dir="left" aria-label="Mover para esquerda">◄</button>
-        <button type="button" class="dpad-btn" id="btn-right" data-dir="right" aria-label="Mover para direita">►</button>
-        <button type="button" class="dpad-btn" id="btn-down" data-dir="down" aria-label="Mover para baixo">▼</button>
+        <button type="button" class="dpad-btn dpad-up" id="btn-up" data-dir="up" aria-label="Mover para cima">▲</button>
+        <button type="button" class="dpad-btn dpad-left" id="btn-left" data-dir="left" aria-label="Mover para esquerda">◄</button>
+        <button type="button" class="dpad-btn dpad-right" id="btn-right" data-dir="right" aria-label="Mover para direita">►</button>
+        <button type="button" class="dpad-btn dpad-down" id="btn-down" data-dir="down" aria-label="Mover para baixo">▼</button>
       </div>
-      <button type="button" id="btn-cantada" aria-label="Lançar cantada">CANTADA<br>💋</button>
+      <button type="button" class="btn-cantada" id="btn-cantada" aria-label="Lançar cantada">CANTADA<br>💋</button>
     </div>
   </div>
   

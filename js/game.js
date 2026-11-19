@@ -266,7 +266,10 @@
 
     detectTouchDevice() {
       const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      if (isTouch && this.dom.mobileControls) {
+      if (isTouch) {
+        document.body.classList.add('touch-device');
+      }
+      if ((isTouch || window.innerWidth <= 768) && this.dom.mobileControls) {
         this.dom.mobileControls.classList.remove('hidden');
       }
     },
@@ -293,40 +296,77 @@
         this.keys[e.code] = false;
       });
 
+      // Helper para ligar ação segura de botão (mouse + touch sem duplo disparo)
+      const bindButtonAction = (element, callback) => {
+        if (!element) return;
+        let lastTrigger = 0;
+        const trigger = (e) => {
+          const now = Date.now();
+          if (now - lastTrigger < 300) return;
+          lastTrigger = now;
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          callback(e);
+        };
+
+        element.addEventListener('pointerdown', trigger);
+        element.addEventListener('click', trigger);
+      };
+
       // Botão Iniciar
-      this.dom.startBtn.addEventListener('click', () => {
+      bindButtonAction(this.dom.startBtn, () => {
         this.startGame();
       });
 
       // Botão Reiniciar
-      this.dom.restartBtn.addEventListener('click', () => {
+      bindButtonAction(this.dom.restartBtn, () => {
         this.restartGame();
       });
 
       // Botão Compartilhar WhatsApp
-      this.dom.shareBtn.addEventListener('click', () => {
+      bindButtonAction(this.dom.shareBtn, () => {
         this.shareWhatsApp();
       });
 
       // Botão Mudo
-      this.dom.muteBtn.addEventListener('click', () => {
-        if (window.AudioManager) {
-          const isMuted = window.AudioManager.toggleMute();
-          this.dom.muteBtn.textContent = isMuted ? '🔇' : '🔊';
+      bindButtonAction(this.dom.muteBtn, () => {
+        try {
+          if (window.AudioManager) {
+            const isMuted = window.AudioManager.toggleMute();
+            this.dom.muteBtn.textContent = isMuted ? '🔇' : '🔊';
+          }
+        } catch (e) {
+          console.warn('Erro ao alternar som:', e);
         }
       });
 
-      // Controles Móveis (Touch)
+      // Controles Móveis (Touch + Mouse + Pointer)
       const bindTouchDir = (btn, dir) => {
         if (!btn) return;
         const setDir = (active, ev) => {
-          if (ev) ev.preventDefault();
+          if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+          }
           this.touchDirs[dir] = active;
+          if (active) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
         };
+
+        btn.addEventListener('pointerdown', (e) => setDir(true, e));
+        btn.addEventListener('pointerup', (e) => setDir(false, e));
+        btn.addEventListener('pointercancel', (e) => setDir(false, e));
+        btn.addEventListener('pointerleave', (e) => setDir(false, e));
 
         btn.addEventListener('touchstart', (e) => setDir(true, e), { passive: false });
         btn.addEventListener('touchend', (e) => setDir(false, e), { passive: false });
         btn.addEventListener('touchcancel', (e) => setDir(false, e), { passive: false });
+
         btn.addEventListener('mousedown', (e) => setDir(true, e));
         btn.addEventListener('mouseup', (e) => setDir(false, e));
         btn.addEventListener('mouseleave', (e) => setDir(false, e));
@@ -338,14 +378,28 @@
       bindTouchDir(this.dom.btnRight, 'right');
 
       if (this.dom.btnCantada) {
+        let lastCantada = 0;
         const triggerCantada = (e) => {
-          if (e) e.preventDefault();
+          const now = Date.now();
+          if (now - lastCantada < 180) return;
+          lastCantada = now;
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          this.dom.btnCantada.classList.add('active');
+          setTimeout(() => {
+            if (this.dom.btnCantada) this.dom.btnCantada.classList.remove('active');
+          }, 120);
+
           if (this.state === 'playing') {
             this.tryCantada();
           }
         };
+
+        this.dom.btnCantada.addEventListener('pointerdown', triggerCantada);
         this.dom.btnCantada.addEventListener('touchstart', triggerCantada, { passive: false });
-        this.dom.btnCantada.addEventListener('mousedown', triggerCantada);
+        this.dom.btnCantada.addEventListener('click', triggerCantada);
       }
     },
 
@@ -353,16 +407,24 @@
     // FLUXO DO JOGO
     // ------------------------------------------------------------------------
     startGame() {
-      // Destrava o áudio no primeiro clique
-      if (window.AudioManager) {
-        window.AudioManager.init();
-        window.AudioManager.startMusic();
-        window.AudioManager.playClickSound();
-        window.AudioManager.preloadAll();
+      // Destrava o áudio no primeiro clique envolto em try/catch para NUNCA travar o início
+      try {
+        if (window.AudioManager) {
+          window.AudioManager.init();
+          window.AudioManager.startMusic();
+          window.AudioManager.playClickSound();
+          window.AudioManager.preloadAll();
+        }
+      } catch (audioErr) {
+        console.warn('Aviso ao inicializar áudio:', audioErr);
       }
 
-      if (window.Achievements) {
-        window.Achievements.reset();
+      try {
+        if (window.Achievements) {
+          window.Achievements.reset();
+        }
+      } catch (achErr) {
+        console.warn('Aviso ao resetar conquistas:', achErr);
       }
 
       this.score = 0;
@@ -386,16 +448,29 @@
       this.chasers = [];
       this.spawnTimer = 0;
 
-      // HUD
-      this.dom.startScreen.classList.add('hidden');
-      this.dom.endScreen.classList.add('hidden');
-      this.dom.hud.classList.remove('hidden');
+      // HUD e Telas
+      if (this.dom.startScreen) this.dom.startScreen.classList.add('hidden');
+      if (this.dom.endScreen) this.dom.endScreen.classList.add('hidden');
+      if (this.dom.hud) this.dom.hud.classList.remove('hidden');
+
+      // Mostra controles mobile se for touch ou tela compacta (<= 768px)
+      const isTouchOrSmall = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 768;
+      if (this.dom.mobileControls) {
+        if (isTouchOrSmall) {
+          this.dom.mobileControls.classList.remove('hidden');
+        }
+      }
+
       this.updateHUD();
 
       // Spawna os primeiros NPCs
-      this.spawnNPC();
-      this.spawnNPC();
-      this.spawnWindowNPC();
+      try {
+        this.spawnNPC();
+        this.spawnNPC();
+        this.spawnWindowNPC();
+      } catch (spawnErr) {
+        console.warn('Aviso ao spawnar NPCs iniciais:', spawnErr);
+      }
     },
 
     restartGame() {
@@ -1316,10 +1391,10 @@
         ctx.strokeRect(14, v.h - 58 + bob, 8, 22);
       }
 
-      // Cabeça Real Recortada (PNG transparente)
+      // Cabeça Real Recortada (PNG transparente estilo South Park)
       const headImg = v.headImages[v.state] || v.headImages.normal;
       if (headImg && headImg.complete && headImg.naturalWidth > 0) {
-        const headW = 44;
+        const headW = 48;
         const headH = (headImg.naturalHeight / headImg.naturalWidth) * headW;
         const headX = -headW * 0.5;
         const headY = v.h - 60 - headH + bob;
@@ -1467,9 +1542,19 @@
     }
   };
 
-  // Inicia o jogo quando o DOM carregar
-  window.addEventListener('DOMContentLoaded', () => {
-    Game.init();
-    window.Game = Game;
-  });
+  // Inicia o jogo com segurança para qualquer momento de carregamento do DOM
+  function bootGame() {
+    try {
+      Game.init();
+      window.Game = Game;
+    } catch (e) {
+      console.error('Erro ao inicializar o jogo:', e);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootGame);
+  } else {
+    bootGame();
+  }
 })();
