@@ -1,0 +1,7 @@
+# Git ignore para o jogo Vicente: O Rei da Lábia
+*.jpeg
+*.jpg
+*.pyc
+__pycache__/
+.DS_Store
+Thumbs.db

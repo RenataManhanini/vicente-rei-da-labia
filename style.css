@@ -1,0 +1,1113 @@
+/* ==========================================================================
+   VICENTE: O REI DA LÁBIA - FOLHA DE ESTILOS PRINCIPAL (style.css)
+   Jogo HTML5 Canvas com estética South Park / Humor Brasileiro
+   Otimizado para Desktop e Mobile (especialmente WhatsApp In-App Browser)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIÁVEIS GLOBAIS E TEMA VISUAL
+   -------------------------------------------------------------------------- */
+:root {
+  /* Paleta de Cores Oficial do Jogo */
+  --bg-dark: #1a1a2e;
+  --bg-card: #16213e;
+  --bg-card-gradient: linear-gradient(145deg, #1f1b40 0%, #16213e 50%, #0f3460 100%);
+  --primary: #e94560;
+  --primary-hover: #ff5c77;
+  --secondary: #FFD700;
+  --secondary-glow: rgba(255, 215, 0, 0.6);
+  --accent: #16213e;
+  --accent-light: #0f3460;
+  --success: #4CAF50;
+  --success-hover: #45a049;
+  --danger: #ff4444;
+  --danger-glow: rgba(255, 68, 68, 0.6);
+  --whatsapp: #25D366;
+  --whatsapp-hover: #20ba5a;
+  
+  /* Cores Neutras */
+  --text-white: #ffffff;
+  --text-muted: #b8b8d2;
+  --color-border: rgba(255, 255, 255, 0.2);
+  --color-card-border: rgba(255, 215, 0, 0.35);
+
+  /* Tipografia */
+  --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-comic: 'Impact', 'Comic Sans MS', 'Arial Black', sans-serif;
+
+  /* Sombras e Efeitos Paper-Cutout */
+  --shadow-card: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(233, 69, 96, 0.2);
+  --shadow-btn: 0 6px 16px rgba(0, 0, 0, 0.4);
+  --shadow-paper: 3px 3px 0px rgba(0, 0, 0, 0.85);
+
+  /* Transições Suaves */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   2. RESET BASE & FULL-SCREEN CANVAS
+   -------------------------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh; /* Compatibilidade total com navegadores mobile modernos */
+  overflow: hidden;
+  background: var(--bg-dark);
+  font-family: var(--font-family);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
+  color: var(--text-white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Esconder barra de rolagem em todos os elementos */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   3. GAME CONTAINER & CANVAS
+   -------------------------------------------------------------------------- */
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-dark);
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  touch-action: none;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* --------------------------------------------------------------------------
+   4. HUD (HEADS-UP DISPLAY - SOBREPOSTO AO CANVAS)
+   -------------------------------------------------------------------------- */
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  pointer-events: none; /* Deixa cliques passarem para o jogo exceto nos botões */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(8px, 2vh, 16px) clamp(12px, 3vw, 24px);
+  padding-top: calc(clamp(8px, 2vh, 16px) + env(safe-area-inset-top, 0px));
+  padding-left: calc(clamp(12px, 3vw, 24px) + env(safe-area-inset-left, 0px));
+  padding-right: calc(clamp(12px, 3vw, 24px) + env(safe-area-inset-right, 0px));
+  background: linear-gradient(180deg, rgba(16, 20, 40, 0.95) 0%, rgba(16, 20, 40, 0.8) 70%, rgba(16, 20, 40, 0) 100%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  gap: 10px;
+}
+
+/* Placar de Pontuação */
+#hud-score,
+.hud-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 80px;
+}
+
+.hud-label {
+  font-size: clamp(10px, 2vw, 12px);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.hud-value-score,
+#score-value {
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 900;
+  color: var(--secondary);
+  text-shadow: 0 0 10px var(--secondary-glow), var(--shadow-paper);
+  font-family: var(--font-comic);
+  letter-spacing: 0.5px;
+}
+
+/* Barra de Combo Central */
+#hud-combo,
+.hud-combo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  max-width: 220px;
+}
+
+.combo-text-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.hud-combo-label {
+  font-size: clamp(10px, 2vw, 12px);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-white);
+}
+
+.hud-combo-multiplier,
+#combo-multiplier {
+  font-size: clamp(12px, 2.5vw, 16px);
+  font-weight: 900;
+  color: var(--secondary);
+  text-shadow: 0 0 8px var(--secondary-glow);
+}
+
+.combo-bar-container,
+#combo-bar-container {
+  width: 100%;
+  height: clamp(8px, 1.8vh, 12px);
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.combo-bar-fill,
+#combo-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #FFD700 0%, #ff758c 50%, #e94560 100%);
+  border-radius: 8px;
+  transition: width 0.15s ease-out;
+  box-shadow: 0 0 8px rgba(233, 69, 96, 0.8);
+}
+
+/* Cronômetro / Timer */
+#hud-timer,
+.hud-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 65px;
+}
+
+.hud-value-timer,
+#timer-value {
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 900;
+  color: var(--text-white);
+  font-family: var(--font-comic);
+  text-shadow: var(--shadow-paper);
+}
+
+/* Timer piscando em vermelho nos últimos 15 segundos */
+.timer-warning,
+#hud-timer.timer-warning #timer-value {
+  animation: timerWarning 0.75s infinite ease-in-out;
+}
+
+/* Botões de Ação do HUD (Mute / Pausa) */
+.hud-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.hud-btn,
+#btn-mute,
+#btn-pause {
+  background: rgba(22, 33, 62, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: var(--text-white);
+  width: clamp(38px, 8vw, 44px);
+  height: clamp(38px, 8vw, 44px);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(16px, 3.5vw, 20px);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  box-shadow: var(--shadow-btn);
+}
+
+.hud-btn:hover,
+#btn-mute:hover,
+#btn-pause:hover {
+  transform: scale(1.08);
+  border-color: var(--secondary);
+  background: var(--primary);
+}
+
+.hud-btn:active,
+#btn-mute:active,
+#btn-pause:active {
+  transform: scale(0.92);
+}
+
+/* --------------------------------------------------------------------------
+   5. OVERLAYS E TELAS DE INTERFACE (START, END, PAUSE)
+   -------------------------------------------------------------------------- */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 25, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+  padding: clamp(12px, 3vw, 24px);
+  padding-top: calc(clamp(12px, 3vw, 24px) + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(clamp(12px, 3vw, 24px) + env(safe-area-inset-bottom, 0px));
+  animation: fadeIn 0.35s ease-out forwards;
+}
+
+/* Cartão Central das Telas */
+.screen-card {
+  background: var(--bg-card-gradient);
+  border: 3px solid var(--color-card-border);
+  border-radius: clamp(16px, 4vw, 24px);
+  box-shadow: var(--shadow-card);
+  padding: clamp(20px, 4vw, 36px);
+  max-width: 480px;
+  width: 100%;
+  max-height: 92vh;
+  max-height: 92dvh;
+  overflow-y: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2vh, 18px);
+  position: relative;
+  animation: slideDown 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+/* Título Dourado do Jogo */
+.game-title,
+#start-title {
+  font-family: var(--font-comic);
+  font-size: clamp(24px, 6.5vw, 36px);
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF275 25%, #FFD700 60%, #E68A00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9));
+  margin-top: 4px;
+}
+
+.game-subtitle {
+  font-size: clamp(12px, 2.5vw, 14px);
+  color: var(--primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: -8px;
+}
+
+/* Foto do Rosto do Vicente (Estilo Recorte de Papel / South Park) */
+.vicente-avatar-wrapper {
+  position: relative;
+  width: clamp(120px, 25vw, 150px);
+  height: clamp(120px, 25vw, 150px);
+  margin: 4px 0;
+}
+
+.vicente-avatar,
+#start-vicente-img,
+#end-vicente-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--secondary);
+  box-shadow: 0 0 20px var(--secondary-glow), var(--shadow-paper);
+  background: #111;
+  transition: transform var(--transition-normal);
+}
+
+.vicente-avatar-wrapper::after {
+  content: '💋';
+  position: absolute;
+  bottom: -4px;
+  right: 0px;
+  font-size: 28px;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.6));
+  animation: pulse 1.5s infinite;
+}
+
+/* Exibição de Recorde */
+.highscore-badge,
+#start-highscore,
+#end-highscore {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1.5px solid var(--secondary);
+  border-radius: 30px;
+  padding: 6px 16px;
+  color: var(--secondary);
+  font-weight: 800;
+  font-size: clamp(13px, 2.8vw, 15px);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
+}
+
+/* Instruções Rápidas */
+.instructions-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: clamp(11px, 2.5vw, 13px);
+  color: var(--text-white);
+  line-height: 1.45;
+  width: 100%;
+}
+
+.instructions-box p {
+  margin: 4px 0;
+}
+
+.instructions-box strong {
+  color: var(--secondary);
+}
+
+/* Botões Primários Grandes (JOGAR / JOGAR NOVAMENTE) */
+.btn-primary,
+#btn-play,
+#btn-restart {
+  width: 100%;
+  max-width: 280px;
+  min-height: 60px;
+  background: linear-gradient(180deg, #4CAF50 0%, #388E3C 100%);
+  border: 2px solid #81C784;
+  border-radius: 50px;
+  color: var(--text-white);
+  font-size: clamp(20px, 4.5vw, 24px);
+  font-weight: 900;
+  font-family: var(--font-comic);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.45), var(--shadow-paper);
+  animation: pulse 1.8s infinite ease-in-out;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+  touch-action: manipulation;
+}
+
+.btn-primary:hover,
+#btn-play:hover,
+#btn-restart:hover {
+  filter: brightness(1.1);
+  transform: scale(1.04);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+}
+
+.btn-primary:active,
+#btn-play:active,
+#btn-restart:active {
+  transform: scale(0.96);
+  filter: brightness(0.9);
+}
+
+/* --------------------------------------------------------------------------
+   6. TELA DE FIM DE JOGO (#end-screen)
+   -------------------------------------------------------------------------- */
+#end-title {
+  font-family: var(--font-comic);
+  font-size: clamp(22px, 5.5vw, 32px);
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ending-good #end-title {
+  color: var(--secondary);
+  text-shadow: 0 0 15px var(--secondary-glow);
+}
+
+.ending-neutral #end-title {
+  color: #ff9800;
+  text-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
+}
+
+.ending-bad #end-title {
+  color: var(--danger);
+  text-shadow: 0 0 15px var(--danger-glow);
+}
+
+.score-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.final-score-value,
+#end-score {
+  font-size: clamp(34px, 8vw, 50px);
+  font-weight: 900;
+  font-family: var(--font-comic);
+  color: var(--secondary);
+  text-shadow: 0 0 15px var(--secondary-glow), var(--shadow-paper);
+  letter-spacing: 1px;
+}
+
+.new-record-alert {
+  font-size: clamp(12px, 2.8vw, 14px);
+  font-weight: 800;
+  color: #00e676;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: pulse 1s infinite;
+}
+
+/* Estatísticas Rápidas de Fim de Jogo */
+.end-stats-row {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.end-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.end-stat-num {
+  font-size: clamp(16px, 3.5vw, 20px);
+  font-weight: 800;
+  color: var(--text-white);
+}
+
+.end-stat-desc {
+  font-size: clamp(10px, 2vw, 11px);
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Grade de Troféus / Conquistas */
+.trophies-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.trophies-title {
+  font-size: clamp(11px, 2.2vw, 13px);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.trophies-grid,
+#trophies-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.trophy-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: clamp(11px, 2.4vw, 13px);
+  color: var(--text-white);
+  font-weight: 600;
+  transition: transform var(--transition-fast);
+}
+
+.trophy-badge.locked {
+  opacity: 0.35;
+  filter: grayscale(1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.trophy-icon {
+  font-size: 16px;
+}
+
+/* Grupo de Ações Finais */
+.end-actions {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 12px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+/* Botão Compartilhar no WhatsApp */
+.btn-whatsapp,
+#btn-whatsapp {
+  width: 100%;
+  max-width: 280px;
+  min-height: 52px;
+  background: linear-gradient(180deg, #25D366 0%, #128C7E 100%);
+  border: 2px solid #25D366;
+  border-radius: 50px;
+  color: var(--text-white);
+  font-size: clamp(16px, 3.8vw, 18px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.35), var(--shadow-paper);
+  transition: transform var(--transition-fast), filter var(--transition-fast);
+  touch-action: manipulation;
+}
+
+.btn-whatsapp:hover,
+#btn-whatsapp:hover {
+  filter: brightness(1.1);
+  transform: scale(1.03);
+}
+
+.btn-whatsapp:active,
+#btn-whatsapp:active {
+  transform: scale(0.96);
+}
+
+/* --------------------------------------------------------------------------
+   7. CONTROLES MOBILE (#mobile-controls & D-PAD)
+   -------------------------------------------------------------------------- */
+#mobile-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 15;
+  pointer-events: none; /* Apenas botões recebem toques */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 12px 20px;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(16px + env(safe-area-inset-left, 0px));
+  padding-right: calc(16px + env(safe-area-inset-right, 0px));
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* D-PAD (Cruz Direcional) */
+.dpad-container,
+#dpad {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: repeat(3, clamp(52px, 14vw, 62px));
+  grid-template-rows: repeat(3, clamp(52px, 14vw, 62px));
+  gap: 6px;
+  touch-action: none;
+}
+
+.dpad-btn {
+  background: rgba(22, 33, 62, 0.82);
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-radius: 14px;
+  color: var(--text-white);
+  font-size: clamp(22px, 5.5vw, 28px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), var(--shadow-paper);
+  transition: transform 0.08s ease, background 0.08s ease, border-color 0.08s ease;
+  touch-action: none;
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* Posicionamento em Cruz no Grid 3x3 */
+.dpad-up,
+#dpad-up {
+  grid-column: 2;
+  grid-row: 1;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.dpad-left,
+#dpad-left {
+  grid-column: 1;
+  grid-row: 2;
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
+}
+
+.dpad-right,
+#dpad-right {
+  grid-column: 3;
+  grid-row: 2;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+.dpad-down,
+#dpad-down {
+  grid-column: 2;
+  grid-row: 3;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+/* Feedback de Toque no D-Pad */
+.dpad-btn:active,
+.dpad-btn.active {
+  background: var(--primary) !important;
+  border-color: var(--secondary) !important;
+  transform: scale(0.92);
+  box-shadow: 0 0 15px rgba(233, 69, 96, 0.8) !important;
+}
+
+/* Botão de Ação: CANTADA 💋 */
+.cantada-container {
+  pointer-events: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+  touch-action: none;
+}
+
+.btn-cantada,
+#btn-cantada {
+  width: clamp(74px, 20vw, 88px);
+  height: clamp(74px, 20vw, 88px);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff3366 0%, #e94560 50%, #c2185b 100%);
+  border: 3.5px solid #ff7597;
+  color: var(--text-white);
+  font-family: var(--font-comic);
+  font-size: clamp(12px, 3.2vw, 14px);
+  font-weight: 900;
+  text-transform: uppercase;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 4px 18px rgba(233, 69, 96, 0.6), var(--shadow-paper);
+  animation: cantadaGlow 1.8s infinite ease-in-out;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.08s ease, filter 0.08s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn-cantada span.emoji-cantada {
+  font-size: clamp(22px, 5.5vw, 26px);
+  line-height: 1;
+}
+
+/* Feedback de Toque no Botão Cantada */
+.btn-cantada:active,
+.btn-cantada.active,
+#btn-cantada:active {
+  transform: scale(0.90);
+  background: #ff1a4b;
+  border-color: var(--secondary);
+  box-shadow: 0 0 25px rgba(255, 51, 102, 0.95);
+}
+
+/* --------------------------------------------------------------------------
+   8. BALÃO DE FALA EM QUADRINHOS (.speech-bubble)
+   -------------------------------------------------------------------------- */
+.speech-bubble {
+  position: absolute;
+  background: #ffffff;
+  color: #111111;
+  font-family: var(--font-comic);
+  font-weight: 700;
+  font-size: clamp(12px, 2.8vw, 15px);
+  line-height: 1.3;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 3px solid #111111;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 220px;
+  min-width: 100px;
+  word-wrap: break-word;
+  text-align: center;
+  z-index: 12;
+  pointer-events: none;
+  animation: bubblePop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: bottom center;
+}
+
+/* Triângulo / Ponteiro do Balão */
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 13px 9px 0 9px;
+  border-style: solid;
+  border-color: #111111 transparent transparent transparent;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px 7px 0 7px;
+  border-style: solid;
+  border-color: #ffffff transparent transparent transparent;
+}
+
+/* Variação: Balão do Vicente com Borda Rosa */
+.speech-bubble.bubble-vicente {
+  border-color: var(--primary);
+}
+
+.speech-bubble.bubble-vicente::before {
+  border-color: var(--primary) transparent transparent transparent;
+}
+
+/* Variação: Balão de Fúria / Pega-Ladrão */
+.speech-bubble.bubble-danger {
+  background: #ffebee;
+  color: var(--danger);
+  border-color: var(--danger);
+  animation: bubblePop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), shake 0.4s ease-in-out infinite;
+}
+
+.speech-bubble.bubble-danger::before {
+  border-color: var(--danger) transparent transparent transparent;
+}
+
+.speech-bubble.bubble-danger::after {
+  border-color: #ffebee transparent transparent transparent;
+}
+
+/* Animação de saída do balão */
+.speech-bubble.fade-out {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.9);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   9. ANIMAÇÕES (KEYFRAMES)
+   -------------------------------------------------------------------------- */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes cantadaGlow {
+  0%, 100% {
+    box-shadow: 0 4px 18px rgba(233, 69, 96, 0.6), 0 0 10px rgba(255, 51, 102, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 6px 26px rgba(233, 69, 96, 0.9), 0 0 20px rgba(255, 51, 102, 0.6);
+    transform: scale(1.04);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes timerWarning {
+  0%, 100% {
+    color: var(--danger);
+    text-shadow: 0 0 6px var(--danger);
+    transform: scale(1);
+  }
+  50% {
+    color: #ff0000;
+    text-shadow: 0 0 16px red, 0 0 25px red;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes bubblePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+/* Confetes da Vitória */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 25;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 16px;
+  top: -20px;
+  border-radius: 2px;
+  opacity: 0.9;
+  animation: confettiFall 3.5s linear infinite;
+}
+
+@keyframes confettiFall {
+  0% {
+    top: -20px;
+    transform: translateX(0) rotate(0deg);
+  }
+  100% {
+    top: 105%;
+    transform: translateX(120px) rotate(720deg);
+  }
+}
+
+/* Cores aleatórias para os confetes */
+.confetti-piece:nth-child(4n+1) { background: #FFD700; }
+.confetti-piece:nth-child(4n+2) { background: #e94560; }
+.confetti-piece:nth-child(4n+3) { background: #4CAF50; }
+.confetti-piece:nth-child(4n+4) { background: #00e5ff; }
+
+/* --------------------------------------------------------------------------
+   10. TELA DE CARREGAMENTO (LOADING SCREEN)
+   -------------------------------------------------------------------------- */
+#loading-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  z-index: 30;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--secondary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+  font-family: var(--font-comic);
+  font-size: 18px;
+  color: var(--secondary);
+  letter-spacing: 1px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   11. DESIGN RESPONSIVO & COMPATIBILIDADE MOBILE
+   -------------------------------------------------------------------------- */
+
+/* Dispositivos Desktop e Telas Grandes (> 768px): Esconde controles virtuais */
+@media (min-width: 769px) {
+  #mobile-controls {
+    display: none !important;
+  }
+}
+
+/* Dispositivos Móveis e Touch (<= 768px): Exibe controles */
+@media (max-width: 768px) {
+  #mobile-controls {
+    display: flex;
+  }
+
+  .screen-card {
+    padding: 20px 16px;
+    gap: 12px;
+  }
+
+  .btn-whatsapp,
+  #btn-whatsapp {
+    width: 100%;
+  }
+
+  .btn-primary,
+  #btn-play,
+  #btn-restart {
+    width: 100%;
+  }
+}
+
+/* Modo Paisagem Compacto (ex: celulares virados de lado) */
+@media (max-height: 500px) and (orientation: landscape) {
+  #hud {
+    padding: 4px 12px;
+  }
+
+  .screen-card {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-height: 96vh;
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .vicente-avatar-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .game-title,
+  #start-title {
+    font-size: 20px;
+    width: 100%;
+  }
+
+  .instructions-box {
+    display: none; /* Poupa espaço em landscape pequeno */
+  }
+
+  .btn-primary,
+  #btn-play,
+  #btn-restart {
+    min-height: 48px;
+    font-size: 18px;
+    max-width: 200px;
+  }
+
+  .dpad-container,
+  #dpad {
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 44px);
+    gap: 4px;
+  }
+
+  .btn-cantada,
+  #btn-cantada {
+    width: 62px;
+    height: 62px;
+    font-size: 11px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. CLASSES AUXILIARES E ACESSIBILIDADE
+   -------------------------------------------------------------------------- */
+.hidden {
+  display: none !important;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--secondary);
+  outline-offset: 2px;
+}

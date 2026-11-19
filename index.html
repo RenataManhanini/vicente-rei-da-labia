@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="description" content="Vicente: O Rei da Lábia - Jogo de navegador onde você controla o Vicente mandando cantadas pela cidade!">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💋</text></svg>">
+
+  <!-- Open Graph for WhatsApp sharing -->
+  <meta property="og:title" content="Vicente: O Rei da Lábia">
+  <meta property="og:description" content="Controle o Vicente e mande cantadas por toda a cidade! Jogo de humor no navegador.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://renatamanhanini.github.io/vicente-rei-da-labia/">
+  <meta property="og:image" content="assets/img/vicente_normal.png">
+  
+  <title>Vicente: O Rei da Lábia</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Main game canvas -->
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- HUD overlay (positioned via CSS above canvas) -->
+    <div id="hud" class="hidden">
+      <div id="hud-left">
+        <div id="score-display">
+          <span class="hud-label">🏆 Pontos</span>
+          <span id="score-value">0</span>
+        </div>
+      </div>
+      <div id="hud-center">
+        <div id="timer-display">
+          <span id="timer-value">90</span>
+          <span class="hud-label">s</span>
+        </div>
+        <div id="combo-container">
+          <div id="combo-bar">
+            <div id="combo-fill"></div>
+          </div>
+          <span id="combo-text"></span>
+        </div>
+      </div>
+      <div id="hud-right">
+        <button type="button" id="mute-btn" aria-label="Mutar ou desmutar som">🔊</button>
+      </div>
+    </div>
+    
+    <!-- Start Screen -->
+    <div id="start-screen">
+      <div class="screen-card">
+        <h1 class="game-title">VICENTE<br><span class="subtitle">O Rei da Lábia</span></h1>
+        <div class="vicente-face">
+          <img id="vicente-portrait" src="assets/img/vicente_normal.png" alt="Vicente">
+        </div>
+        <div id="record-display">
+          <span>🏅 Recorde: </span><span id="record-value">0</span><span> pts</span>
+        </div>
+        <div class="instructions">
+          <p><strong>PC:</strong> Setas/WASD para mover • Espaço para cantada</p>
+          <p><strong>Mobile:</strong> D-Pad para mover • Botão 💋 para cantada</p>
+          <p>Conquiste o máximo de alvos em 90 segundos!</p>
+          <p>⚠️ Cuidado com as ciladas!</p>
+        </div>
+        <button type="button" id="start-btn" class="btn-primary">JOGAR 🎮</button>
+      </div>
+    </div>
+    
+    <!-- End Screen -->
+    <div id="end-screen" class="hidden">
+      <div class="screen-card">
+        <h2 id="end-title"></h2>
+        <div class="vicente-face">
+          <img id="end-vicente" src="assets/img/vicente_normal.png" alt="Vicente">
+        </div>
+        <div id="end-message"></div>
+        <div class="end-score">
+          <span>Pontuação: </span><span id="final-score">0</span><span> pts</span>
+        </div>
+        <div class="end-record">
+          <span>🏅 Recorde: </span><span id="final-record">0</span><span> pts</span>
+        </div>
+        <div id="trophies-container">
+          <h3>🏆 Troféus Desbloqueados</h3>
+          <div id="trophies-grid"></div>
+        </div>
+        <div class="end-buttons">
+          <button type="button" id="restart-btn" class="btn-primary">Jogar Novamente 🔄</button>
+          <button type="button" id="share-btn" class="btn-whatsapp">Compartilhar no WhatsApp 📱</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mobile Controls -->
+    <div id="mobile-controls" class="hidden">
+      <div id="dpad">
+        <button type="button" class="dpad-btn" id="btn-up" data-dir="up" aria-label="Mover para cima">▲</button>
+        <button type="button" class="dpad-btn" id="btn-left" data-dir="left" aria-label="Mover para esquerda">◄</button>
+        <button type="button" class="dpad-btn" id="btn-right" data-dir="right" aria-label="Mover para direita">►</button>
+        <button type="button" class="dpad-btn" id="btn-down" data-dir="down" aria-label="Mover para baixo">▼</button>
+      </div>
+      <button type="button" id="btn-cantada" aria-label="Lançar cantada">CANTADA<br>💋</button>
+    </div>
+  </div>
+  
+  <!-- Scripts in correct load order -->
+  <script src="js/audio.js"></script>
+  <script src="js/npcs.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
