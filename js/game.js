@@ -63,9 +63,9 @@
     vicente: {
       x: 300,
       y: 0,
-      w: 48,
-      h: 96,
-      speed: 4.2,
+      w: 68,
+      h: 140,
+      speed: 4.5,
       facing: 1, // 1: direita, -1: esquerda
       state: 'normal', // 'normal', 'galanteador', 'ostentacao', 'susto'
       stateTimer: 0,
@@ -193,8 +193,8 @@
     },
 
     getSidewalkYRange() {
-      const minY = this.height * 0.58;
-      const maxY = this.height * 0.88 - this.vicente.h;
+      const minY = this.height * 0.50;
+      const maxY = this.height * 0.86 - this.vicente.h;
       return {
         minY,
         maxY,
@@ -757,7 +757,7 @@
         // Se for a Ex-Namorada Tóxica, verifica proximidade com o Vicente
         if (npc.id === 'ex_toxica') {
           const dist = Math.hypot(this.vicente.x - npc.x, this.vicente.y - npc.y);
-          if (dist < 85) {
+          if (dist < 120) {
             this.vicente.isSlowed = true;
             this.vicente.slowTimer = 4.0;
             this.vicente.state = 'susto';
@@ -777,7 +777,7 @@
       this.spawnTimer += dt;
 
       // Obtém configurações de spawn do módulo npcs.js
-      let config = { minSpawnInterval: 2.0, maxSpawnInterval: 3.5, maxOnScreen: 6 };
+      let config = { minSpawnInterval: 2.8, maxSpawnInterval: 4.2, maxOnScreen: 3 };
       if (window.NPCData && typeof window.NPCData.getSpawnConfig === 'function') {
         config = window.NPCData.getSpawnConfig(this.elapsedTime, 90);
       }
@@ -834,7 +834,7 @@
       if (!targetBuilding) return;
 
       const sidewalk = this.getSidewalkYRange();
-      const windowY = sidewalk.minY - 100; // Altura da janela no 1º andar do prédio
+      const windowY = sidewalk.minY - 75; // Altura da janela no 1º andar do prédio
 
       const windowInstance = {
         ...vizinhaProto,
@@ -865,7 +865,7 @@
       // Procura o NPC mais próximo dentro do raio de alcance
       let closest = null;
       let closestDist = Infinity;
-      const reachRadius = 110;
+      const reachRadius = 150;
 
       for (let i = 0; i < this.activeNPCs.length; i++) {
         const npc = this.activeNPCs[i];
@@ -910,8 +910,8 @@
           window.AudioManager.playPointSound();
         }
         this.showSpeechBubble('Quase lá gata! Mais um elogio!', false);
-        this.spawnHeart(closest.x, closest.y - 40);
-        this.spawnScoreEffect(closest.x, closest.y - 30, '+Quase lá!', '#ff80ab');
+        this.spawnHeart(closest.x, closest.y - 65);
+        this.spawnScoreEffect(closest.x, closest.y - 45, '+Quase lá!', '#ff80ab');
       }
     },
 
@@ -945,11 +945,11 @@
 
       // Efeitos Visuais
       this.showSpeechBubble(this.getRandomCantadaText(), false);
-      this.spawnHeartBurst(npc.x, npc.y - 40);
-      this.spawnScoreEffect(npc.x, npc.y - 30, `+${earnedPoints} pts!`, '#ffd700');
+      this.spawnHeartBurst(npc.x, npc.y - 65);
+      this.spawnScoreEffect(npc.x, npc.y - 45, `+${earnedPoints} pts!`, '#ffd700');
 
       if (this.combo >= 3) {
-        this.spawnScoreEffect(v.x, v.y - 70, `COMBO x${this.combo}! 🔥`, '#ff4081');
+        this.spawnScoreEffect(v.x, v.y - 95, `COMBO x${this.combo}! 🔥`, '#ff4081');
       }
 
       // Registra estatísticas e conquistas
@@ -1269,9 +1269,9 @@
         }
       }
 
-      // 3. Calçada (Área jogável)
-      const sidewalkY = h * 0.58;
-      const sidewalkH = h * 0.28;
+      // 3. Calçada ampliada para acomodar os personagens maiores
+      const sidewalkY = h * 0.50;
+      const sidewalkH = h * 0.36;
 
       ctx.fillStyle = '#e0e0e0';
       ctx.fillRect(0, sidewalkY, w, sidewalkH);
@@ -1297,14 +1297,14 @@
       for (let px = 150; px < w; px += 450) {
         ctx.beginPath();
         ctx.moveTo(px, sidewalkY + 20);
-        ctx.lineTo(px, sidewalkY - 80);
-        ctx.lineTo(px + 25, sidewalkY - 85);
+        ctx.lineTo(px, sidewalkY - 110);
+        ctx.lineTo(px + 30, sidewalkY - 115);
         ctx.stroke();
 
         // Cúpula da lâmpada
         ctx.fillStyle = '#ffee58';
         ctx.beginPath();
-        ctx.arc(px + 25, sidewalkY - 80, 8, 0, Math.PI);
+        ctx.arc(px + 30, sidewalkY - 110, 10, 0, Math.PI);
         ctx.fill();
       }
 
@@ -1327,9 +1327,10 @@
 
     drawVicente(ctx) {
       const v = this.vicente;
+      const SCALE = 1.45;
       ctx.save();
       ctx.translate(v.x, v.y);
-      ctx.scale(v.facing, 1);
+      ctx.scale(v.facing * SCALE, SCALE);
 
       const bob = Math.sin(v.animFrame * Math.PI) * 2.5;
 
@@ -1406,19 +1407,19 @@
 
       // Balão de fala estilo gibi HQ
       if (v.speechBubble) {
-        this.drawSpeechBubble(ctx, v.x, v.y + bob - 15, v.speechBubble);
+        this.drawSpeechBubble(ctx, v.x, v.y + bob * 1.45 - 25, v.speechBubble);
       }
     },
 
     drawSpeechBubble(ctx, x, y, bubble) {
       ctx.save();
-      ctx.font = 'bold 12px "Impact", "Arial Black", sans-serif';
+      ctx.font = 'bold 14px "Impact", "Arial Black", sans-serif';
       const text = bubble.text;
       const textW = ctx.measureText(text).width;
-      const bw = Math.max(textW + 24, 130);
-      const bh = 34;
+      const bw = Math.max(textW + 30, 150);
+      const bh = 38;
       const bx = x - bw * 0.5;
-      const by = y - bh - 65;
+      const by = y - bh - 85;
 
       // Fundo branco com borda preta grossa
       ctx.fillStyle = bubble.isError ? '#ffebee' : '#ffffff';
@@ -1471,9 +1472,11 @@
     },
 
     drawChasers(ctx) {
+      const SCALE = 1.45;
       for (const c of this.chasers) {
         ctx.save();
         ctx.translate(c.x, c.y);
+        ctx.scale(SCALE, SCALE);
 
         // Homem furioso correndo atrás do Vicente
         ctx.fillStyle = c.type === 'policial' ? '#0d47a1' : '#b71c1c';

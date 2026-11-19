@@ -6,6 +6,9 @@
 (function () {
   'use strict';
 
+  // Escala visual ampliada para destacar os personagens estilo South Park
+  const NPC_SCALE = 1.45;
+
   // Helper de desenho South Park
   function drawRoundedRect(ctx, x, y, w, h, r) {
     if (w < 2 * r) r = w / 2;
@@ -51,22 +54,25 @@
 
   function drawLabel(ctx, text, x, y, color) {
     ctx.save();
-    ctx.font = 'bold 10px "Segoe UI", Arial, sans-serif';
+    ctx.font = 'bold 12px "Segoe UI", Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
-    const padding = 3;
+    const padding = 5;
     const textWidth = ctx.measureText(text).width;
     
-    // Tarja de fundo
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-    ctx.fillRect(x - textWidth / 2 - padding, y - 14, textWidth + padding * 2, 14);
+    // Tarja de fundo posicionada acima da cabeca do personagem maior (nao cobre o rosto)
+    const labelH = 17;
+    const labelY = y - 24;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+    ctx.fillRect(x - textWidth / 2 - padding, labelY - labelH, textWidth + padding * 2, labelH);
     ctx.strokeStyle = color || '#FFD700';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x - textWidth / 2 - padding, y - 14, textWidth + padding * 2, 14);
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x - textWidth / 2 - padding, labelY - labelH, textWidth + padding * 2, labelH);
 
     // Texto
     ctx.fillStyle = color || '#FFFFFF';
-    ctx.fillText(text, x, y - 3);
+    ctx.fillText(text, x, labelY - 3);
     ctx.restore();
   }
 
@@ -89,7 +95,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Pernas (shorts jeans e pernas finas)
@@ -148,7 +154,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Mochila atrás
@@ -210,7 +216,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 3;
 
         // Legging verde neon
@@ -272,7 +278,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Bermuda caqui
@@ -333,7 +339,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Calça social preta
@@ -400,7 +406,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Botas salto alto
@@ -463,7 +469,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Meia arrastão preta e coturno
@@ -522,7 +528,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Saia colegial azul e meias 5/8
@@ -598,7 +604,7 @@
       draw(ctx, x, y, w, h, facing, animFrame, revealed, hits) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Pernas mais grossas
@@ -665,7 +671,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
 
         // Roda grande da cadeira girando
         const wheelAngle = animFrame * Math.PI;
@@ -735,7 +741,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Pernas muito longas
@@ -783,7 +789,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 3;
 
         // Perninhas curtas
@@ -847,7 +853,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Mãe
@@ -905,7 +911,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Vestido florido verde e amarelo
@@ -968,7 +974,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 1.5;
 
         // Saia longa cinza
@@ -1039,7 +1045,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Vestido dourado chiquérrimo
@@ -1106,7 +1112,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Mãe cansada
@@ -1167,7 +1173,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Shorts jeans rasgado
@@ -1232,6 +1238,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
+        ctx.scale(NPC_SCALE, NPC_SCALE);
 
         // Moldura da janela do prédio
         ctx.fillStyle = '#3e2723';
@@ -1292,7 +1299,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Calça azul marinho
@@ -1347,7 +1354,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Calça animal print / dourada
@@ -1408,7 +1415,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Calça preta
@@ -1470,7 +1477,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 4;
 
         // Véu voando atrás
@@ -1539,7 +1546,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         // Andar bem torto
         const wobble = Math.sin(animFrame * Math.PI * 2) * 4;
         const bob = Math.sin(animFrame * Math.PI) * 2;
@@ -1608,7 +1615,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 1.5;
 
         // Casaco de pele branco refinado
@@ -1683,7 +1690,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Avental de cozinha marrom
@@ -1744,7 +1751,7 @@
       draw(ctx, x, y, w, h, facing, animFrame) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         // Vestidinho verde com estampa bizarra
@@ -1812,7 +1819,7 @@
       draw(ctx, x, y, w, h, facing, animFrame, revealed) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         if (!revealed) {
@@ -1886,7 +1893,7 @@
       draw(ctx, x, y, w, h, facing, animFrame, revealed) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         if (!revealed) {
@@ -1954,7 +1961,7 @@
       draw(ctx, x, y, w, h, facing, animFrame, revealed) {
         ctx.save();
         ctx.translate(x, y);
-        ctx.scale(facing, 1);
+        ctx.scale(facing * NPC_SCALE, NPC_SCALE);
         const bob = Math.sin(animFrame * Math.PI) * 2;
 
         if (!revealed) {
@@ -2063,9 +2070,9 @@
 
       return {
         candidates: candidates.length > 0 ? candidates : NPCS,
-        maxOnScreen: 6,
-        minSpawnInterval: 1.8,
-        maxSpawnInterval: 3.2
+        maxOnScreen: 3,
+        minSpawnInterval: 2.8,
+        maxSpawnInterval: 4.2
       };
     }
   };
